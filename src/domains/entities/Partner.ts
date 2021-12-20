@@ -12,7 +12,7 @@ class Partner implements IPartnerEntity {
   private readonly _imageUrl: string;
   private readonly _mobileImageUrl: string;
   private readonly _url: string;
-  private readonly _partnerCategories: IPartnerCategoryData;
+  private readonly _partnerCategories: IPartnerCategoryData[];
 
   constructor(params: IPartnerData) {
     this._id = params.partnerID;

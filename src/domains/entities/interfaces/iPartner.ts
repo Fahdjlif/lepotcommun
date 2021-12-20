@@ -1,4 +1,4 @@
-import { IPartnerCategoryData, IPartnerCategoryEntity } from "./iPartnerCategory";
+import { IPartnerCategoryData } from "./iPartnerCategory";
 
 export interface IPartnerEntity {
   id: number;
@@ -8,7 +8,7 @@ export interface IPartnerEntity {
   imageUrl: string;
   mobileImageUrl: string;
   url: string;
-  partnerCategories: IPartnerCategoryData;
+  partnerCategories: IPartnerCategoryData[];
 }
 
 export interface IPartnerData {
@@ -19,5 +19,5 @@ export interface IPartnerData {
   mobileImageUrlPAR: string;
   imageUrlPAR: string;
   urlPAR: string;
-  partnerCategories: IPartnerCategoryData;
+  partnerCategories: IPartnerCategoryData[];
 }

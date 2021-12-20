@@ -1,0 +1,8 @@
+@import "mediaqueries";
+@import "variables";
+
+.App {
+  text-align: center;
+  background-color: $background-grey;
+  min-height: 100vh;
+}

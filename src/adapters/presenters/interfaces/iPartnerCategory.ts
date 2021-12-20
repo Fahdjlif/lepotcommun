@@ -1,5 +1,5 @@
-import { IPartnerCategoryEntity } from '@domains/entities/interfaces/iPartnerCategory';
+import { IPartnerCategoryEntity } from "@domains/entities/interfaces/iPartnerCategory";
 
 export interface IPartnerCategoryPresenter {
-  getPartnersCategries(): Promise<Array<IPartnerCategoryEntity>>
+  getPartnersCategories(): Promise<Array<IPartnerCategoryEntity>>;
 }

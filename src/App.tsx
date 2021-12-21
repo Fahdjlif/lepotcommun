@@ -6,6 +6,7 @@ import { IPartnerEntity } from "@domains/entities/interfaces/iPartner";
 import Card from "@components/card";
 import { IPartnerCategoryEntity } from "@domains/entities/interfaces/iPartnerCategory";
 import FilterCard from "@components/filterCard";
+
 function App() {
   const [partners, setPartners] = useState<Array<IPartnerEntity>>();
   const [categories, setCategories] = useState<Array<IPartnerCategoryEntity>>();
@@ -19,7 +20,7 @@ function App() {
     Array<IPartnerCategoryEntity>
   >([]);
   const [hasMore, setHasMore] = useState(true);
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumber, setPageNumber] = useState(0);
   const observer = useRef<any>();
 
   const lastPartner = useCallback(
@@ -54,14 +55,14 @@ function App() {
     di.partner.getPartners().then((data) => {
       setPartners(data);
       setFilteredPartners(data);
-      setDisplayPartners(data.slice(0, 20));
+      setDisplayPartners(data.slice(0, 10));
     });
     di.partnerCategory
       .getPartnersCategories()
       .then((data) => setCategories(data));
   }, []);
 
-  const sortAndFilter = async (category: IPartnerCategoryEntity) => {
+  const filter = async (category: IPartnerCategoryEntity) => {
     var categories = selectedCategories;
     if (selectedCategories.includes(category)) {
       categories.splice(categories.indexOf(category), 1);
@@ -71,7 +72,7 @@ function App() {
     setSelectedCategories(categories);
     if (categories.length === 0 && partners) {
       setFilteredPartners(partners ? partners : []);
-      setDisplayPartners(partners.slice(0, 20));
+      setDisplayPartners(partners.slice(0, 10));
       resetPaging(partners);
       return;
     }
@@ -84,13 +85,13 @@ function App() {
           )
       );
       setFilteredPartners(filtered);
-      setDisplayPartners(filtered.slice(0, 20));
+      setDisplayPartners(filtered.slice(0, 10));
       resetPaging(filtered);
     }
   };
   const resetPaging = (filtered: IPartnerEntity[]) => {
-    setHasMore(filtered.length > 20);
-    setPageNumber(1);
+    setHasMore(filtered.length > 10);
+    setPageNumber(0);
   };
   return (
     <div className="App">
@@ -98,7 +99,7 @@ function App() {
       <div>
         {categories ? (
           categories.map((category) => (
-            <div onClick={() => sortAndFilter(category)} key={category.id}>
+            <div onClick={() => filter(category)} key={category.id}>
               <FilterCard
                 category={category}
                 clicked={selectedCategories?.includes(category)}
@@ -109,7 +110,7 @@ function App() {
           <img src={"images/loading.svg"} alt={"images/loading.svg"}></img>
         )}
       </div>
-      <div>
+      <div className="partnersContainer">
         {displayPartners ? (
           displayPartners.map((partner, index) => {
             if (displayPartners.length === index + 1) {

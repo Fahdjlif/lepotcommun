@@ -6,3 +6,10 @@
   background-color: $background-grey;
   min-height: 100vh;
 }
+.partnersContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  justify-content: center;
+  gap: 10px;
+  margin: auto;
+}

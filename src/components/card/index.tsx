@@ -6,15 +6,18 @@ interface Params {
 }
 const URL_PREFIX = "https://recette2.lepotcommuntest.fr";
 const Card = (params: Params) => {
+  //Display card info on hover, hide otherwise
   const [style, setStyle] = useState({ display: "none" });
-  const isValidHttpUrl = (url: string) => {
+
+  //check if link is valid url, otherwise append url prefix
+  const getValidHttpUrl = (url: string): string => {
     try {
-      var link = new URL(url);
+      new URL(url);
     } catch (_) {
-      return false;
+      return URL_PREFIX + url;
     }
 
-    return link.protocol === "http:" || link.protocol === "https:";
+    return url;
   };
   return (
     <div
@@ -28,34 +31,17 @@ const Card = (params: Params) => {
     >
       <img
         className={css.image}
-        src={
-          isValidHttpUrl(params.partner.imageUrl)
-            ? params.partner.imageUrl
-            : URL_PREFIX + params.partner.imageUrl
-        }
-        alt={
-          isValidHttpUrl(params.partner.imageUrl)
-            ? params.partner.imageUrl
-            : URL_PREFIX + params.partner.imageUrl
-        }
+        src={getValidHttpUrl(params.partner.imageUrl)}
+        alt={getValidHttpUrl(params.partner.imageUrl)}
         onError={(e: any) => {
-          console.log("IMAGE ERROR", params.partner.imageUrl);
           e.target.onError = null;
           e.target.src = "images/placeholder.png";
         }}
       ></img>
       <img
         className={css.logo}
-        src={
-          isValidHttpUrl(params.partner.logoUrl)
-            ? params.partner.logoUrl
-            : URL_PREFIX + params.partner.logoUrl
-        }
-        alt={
-          isValidHttpUrl(params.partner.logoUrl)
-            ? params.partner.imageUrl
-            : URL_PREFIX + params.partner.logoUrl
-        }
+        src={getValidHttpUrl(params.partner.imageUrl)}
+        alt={getValidHttpUrl(params.partner.imageUrl)}
         onError={(e: any) => {
           e.target.onError = null;
           e.target.src = "images/placeholder.png";
@@ -69,16 +55,8 @@ const Card = (params: Params) => {
               <td>
                 <img
                   className={css.logoHover}
-                  src={
-                    isValidHttpUrl(params.partner.logoUrl)
-                      ? params.partner.logoUrl
-                      : URL_PREFIX + params.partner.logoUrl
-                  }
-                  alt={
-                    isValidHttpUrl(params.partner.logoUrl)
-                      ? params.partner.imageUrl
-                      : URL_PREFIX + params.partner.logoUrl
-                  }
+                  src={getValidHttpUrl(params.partner.imageUrl)}
+                  alt={getValidHttpUrl(params.partner.imageUrl)}
                   onError={(e: any) => {
                     e.target.onError = null;
                     e.target.src = "images/placeholder.png";

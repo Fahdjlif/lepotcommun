@@ -23,6 +23,7 @@ function App() {
   const [pageNumber, setPageNumber] = useState(0);
   const observer = useRef<any>();
 
+  //Detect end of scroll and add more elements
   const lastPartner = useCallback(
     (node) => {
       if (observer.current) {
@@ -52,24 +53,65 @@ function App() {
   );
 
   useEffect(() => {
+    var partnerData: IPartnerEntity[];
     di.partner.getPartners().then((data) => {
       setPartners(data);
-      setFilteredPartners(data);
-      setDisplayPartners(data.slice(0, 10));
+      partnerData = data;
+      di.partnerCategory.getPartnersCategories().then((data) => {
+        setCategories(data);
+        initSelection(data, partnerData);
+      });
     });
-    di.partnerCategory
-      .getPartnersCategories()
-      .then((data) => setCategories(data));
   }, []);
 
-  const filter = async (category: IPartnerCategoryEntity) => {
+  //Initialize partners,categories and filter once fetched
+  function initSelection(
+    categoriesData: IPartnerCategoryEntity[],
+    partnersData: IPartnerEntity[]
+  ) {
+    const storedFilter = localStorage.getItem("selectedCategories")
+      ? categoriesData.filter((item) =>
+          JSON.parse(localStorage.getItem("selectedCategories")!).includes(
+            item.id
+          )
+        )
+      : [];
+    if (storedFilter.length === 0) {
+      resetFilter(partnersData);
+    } else {
+      setSelectedCategories(storedFilter);
+      if (storedFilter.length === 0 && partners) {
+        setFilteredPartners(partners ? partners : []);
+        setDisplayPartners(partners.slice(0, 10));
+        resetPaging(partners);
+        return;
+      }
+      const filtered = partnersData.filter((it) =>
+        it.partnerCategories
+          .map((category) => category.partnerCategoryID)
+          .some((categoryId) =>
+            storedFilter.map((selected) => selected.id).includes(categoryId)
+          )
+      );
+      setFilteredPartners(filtered);
+      setDisplayPartners(filtered.slice(0, 10));
+      resetPaging(filtered);
+    }
+  }
+  //Filter partners by category, reset paging
+  const filter = (category: IPartnerCategoryEntity) => {
     var categories = selectedCategories;
     if (selectedCategories.includes(category)) {
       categories.splice(categories.indexOf(category), 1);
     } else {
       categories.push(category);
     }
+    localStorage.setItem(
+      "selectedCategories",
+      JSON.stringify(categories.map((item) => item.id))
+    );
     setSelectedCategories(categories);
+
     if (categories.length === 0 && partners) {
       setFilteredPartners(partners ? partners : []);
       setDisplayPartners(partners.slice(0, 10));
@@ -89,20 +131,27 @@ function App() {
       resetPaging(filtered);
     }
   };
+
   const resetPaging = (filtered: IPartnerEntity[]) => {
     setHasMore(filtered.length > 10);
     setPageNumber(0);
   };
-  const resetFilter = () => {
-    if (partners) {
-      localStorage.removeItem("selectedCategories");
-      setSelectedCategories([]);
-      setFilteredPartners(partners);
-      setDisplayPartners(partners.slice(0, 10));
-      setHasMore(true);
-      setPageNumber(0);
-    }
+
+  const resetFilter = (partnersData?: IPartnerEntity[]) => {
+    localStorage.removeItem("selectedCategories");
+    setSelectedCategories([]);
+    setFilteredPartners(partnersData ? partnersData : partners ? partners : []);
+    setDisplayPartners(
+      partnersData
+        ? partnersData.slice(0, 10)
+        : partners
+        ? partners.slice(0, 10)
+        : []
+    );
+    setHasMore(true);
+    setPageNumber(0);
   };
+
   return (
     <div className="App">
       <PageHeader />
@@ -118,7 +167,9 @@ function App() {
             <div onClick={() => filter(category)} key={category.id}>
               <FilterCard
                 category={category.nameKey}
-                clicked={selectedCategories?.includes(category)}
+                clicked={selectedCategories
+                  ?.map((item) => item.id)
+                  .includes(category.id)}
               ></FilterCard>
             </div>
           ))

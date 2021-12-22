@@ -28,11 +28,6 @@ const Card = (params: Params) => {
     >
       <img
         className={css.image}
-        style={{
-          backgroundImage: isValidHttpUrl(params.partner.imageUrl)
-            ? params.partner.imageUrl
-            : URL_PREFIX + params.partner.imageUrl,
-        }}
         src={
           isValidHttpUrl(params.partner.imageUrl)
             ? params.partner.imageUrl
@@ -43,6 +38,11 @@ const Card = (params: Params) => {
             ? params.partner.imageUrl
             : URL_PREFIX + params.partner.imageUrl
         }
+        onError={(e: any) => {
+          console.log("IMAGE ERROR", params.partner.imageUrl);
+          e.target.onError = null;
+          e.target.src = "images/placeholder.png";
+        }}
       ></img>
       <img
         className={css.logo}
@@ -56,6 +56,10 @@ const Card = (params: Params) => {
             ? params.partner.imageUrl
             : URL_PREFIX + params.partner.logoUrl
         }
+        onError={(e: any) => {
+          e.target.onError = null;
+          e.target.src = "images/placeholder.png";
+        }}
       ></img>
 
       <div style={style} className={css.info}>
@@ -75,6 +79,10 @@ const Card = (params: Params) => {
                       ? params.partner.imageUrl
                       : URL_PREFIX + params.partner.logoUrl
                   }
+                  onError={(e: any) => {
+                    e.target.onError = null;
+                    e.target.src = "images/placeholder.png";
+                  }}
                 ></img>
               </td>
               <td className={css.infoRow}>

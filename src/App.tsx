@@ -93,15 +93,31 @@ function App() {
     setHasMore(filtered.length > 10);
     setPageNumber(0);
   };
+  const resetFilter = () => {
+    if (partners) {
+      localStorage.removeItem("selectedCategories");
+      setSelectedCategories([]);
+      setFilteredPartners(partners);
+      setDisplayPartners(partners.slice(0, 10));
+      setHasMore(true);
+      setPageNumber(0);
+    }
+  };
   return (
     <div className="App">
       <PageHeader />
-      <div>
+      <div className="categoriesContainer">
+        <div onClick={() => resetFilter()}>
+          <FilterCard
+            category={"Tous"}
+            clicked={selectedCategories.length === 0}
+          ></FilterCard>
+        </div>
         {categories ? (
           categories.map((category) => (
             <div onClick={() => filter(category)} key={category.id}>
               <FilterCard
-                category={category}
+                category={category.nameKey}
                 clicked={selectedCategories?.includes(category)}
               ></FilterCard>
             </div>
@@ -111,7 +127,7 @@ function App() {
         )}
       </div>
       <div className="partnersContainer">
-        {displayPartners ? (
+        {partners ? (
           displayPartners.map((partner, index) => {
             if (displayPartners.length === index + 1) {
               return (
